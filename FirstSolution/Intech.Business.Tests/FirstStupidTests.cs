@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,13 @@ namespace Intech.Business.Tests
             sum = x1 + x2;
             // Assert
             Assert.That( sum > x1 && sum > x2 );
+        }
+
+        [Test]
+        public void WhereAmI()
+        {
+            DirectoryInfo s = TestHelper.SolutionFolder;
+
         }
 
     }
