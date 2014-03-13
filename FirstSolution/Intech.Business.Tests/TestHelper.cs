@@ -10,30 +10,62 @@ namespace Intech.Business.Tests
 {
     class TestHelper
     {
-        static public DirectoryInfo TestSupportFolder
-        {
-            get
-            {
-                return new DirectoryInfo( 
-                                Path.Combine( 
-                                    SolutionFolder.FullName, 
-                                    "Intech.Business.Tests", 
-                                    "TestSupport" ) );
-            }
-        }
+        static readonly DirectoryInfo _solutionFolder;
+        static DirectoryInfo _testSupportFolder;
 
-        
-        static public DirectoryInfo SolutionFolder
+
+        static TestHelper()
         {
-            get
-            {
-                return new DirectoryInfo(
+            _solutionFolder = new DirectoryInfo(
                     Path.GetDirectoryName( 
                         Path.GetDirectoryName( 
                             Path.GetDirectoryName(
                                 Path.GetDirectoryName( 
                                     new Uri( Assembly.GetExecutingAssembly().CodeBase ).LocalPath ) ) ) ) );
+        }
+        
+        static public DirectoryInfo TestSupportFolder
+        {
+            get
+            {
+                return _testSupportFolder 
+                            ?? (_testSupportFolder = new DirectoryInfo(
+                                                               Path.Combine(
+                                                                   SolutionFolder.FullName,
+                                                                   "Intech.Business.Tests",
+                                                                   "TestSupport" ) ))
+                            ?? new DirectoryInfo( "" );
+
+                return _testSupportFolder != null 
+                            ? _testSupportFolder
+                            : (_testSupportFolder = new DirectoryInfo(
+                                   Path.Combine(
+                                       SolutionFolder.FullName,
+                                       "Intech.Business.Tests",
+                                       "TestSupport" ) ) );
+
+
+                if( _testSupportFolder == null )
+                {
+
+                    _testSupportFolder = new DirectoryInfo(
+                                   Path.Combine(
+                                       SolutionFolder.FullName,
+                                       "Intech.Business.Tests",
+                                       "TestSupport" ) );
+                }
+                return _testSupportFolder;
             }
+        }
+
+        static public DirectoryInfo SolutionFolder
+        {
+            get { return _solutionFolder; }
+        }
+
+        static public string TestSupportPath
+        {
+            get { return TestSupportFolder.FullName; }
         }
 
     }
