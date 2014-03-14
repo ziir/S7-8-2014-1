@@ -16,6 +16,14 @@ namespace Intech.Business
             _array = new T[8];
         }
 
+        public ITIList(T[] itemsArray)
+        {
+            var newOne = new T[itemsArray.Length * 2 >= 8 ? itemsArray.Length * 2 : 8];
+            Array.Copy(itemsArray, newOne, itemsArray.Length);
+            _array = newOne;
+            _count = itemsArray.Length;
+        }
+
         public int Count
         {
             get { return _count; }
@@ -52,5 +60,32 @@ namespace Intech.Business
             Array.Copy( _array, i + 1, _array, i, _count - (i+1) );
             _array[--_count] = default( T );
         }
+
+        public void Remove( T value )
+        {
+
+            var targetHashCode = value.GetHashCode();
+            for ( int i = 0; i < _count; i++ )
+            {
+                if ( _array[i].GetHashCode() == targetHashCode )
+                {
+                    RemoveAt(i);
+                    break;
+                }
+            }
+
+        }
+
+        public void RemoveUsingIndexOf( T value )
+        {
+           RemoveAt(Array.IndexOf(_array, value));
+        }
+
+        public void Remove(T[] values)
+        {
+            Action<T> removeAction = new Action<T>(RemoveUsingIndexOf);
+            Array.ForEach(values, removeAction);
+        }
+
     }
 }
