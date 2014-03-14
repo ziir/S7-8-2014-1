@@ -48,7 +48,7 @@ namespace Intech.Business
 
         public void RemoveAt( int i )
         {
-            if( i >= _count ) throw new IndexOutOfRangeException();
+            if( i < 0 || i >= _count ) throw new IndexOutOfRangeException();
             Array.Copy( _array, i + 1, _array, i, _count - (i+1) );
             _array[--_count] = default( T );
         }
