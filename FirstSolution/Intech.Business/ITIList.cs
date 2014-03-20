@@ -87,5 +87,22 @@ namespace Intech.Business
             Array.ForEach(values, removeAction);
         }
 
+        public void ForEach(string methodName)
+        {
+            try
+            {
+                for (var i = 0; i < Count; i++)
+                {
+                    T item = _array[i];
+                    item.GetType().GetMethod(methodName).Invoke(item, null);
+                }
+            }
+            catch
+            {
+                throw new NotImplementedException();
+            }
+
+        }
+
     }
 }

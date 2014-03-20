@@ -10,13 +10,6 @@ namespace Intech.Business.Tests
     [TestFixture]
     public class ITIListTests
     {
-        [Test]
-        public void Basics()
-        {
-            ITIList<int> myList = new ITIList<int>();
-            ITIList<string> myList2 = new ITIList<string>();
-            var myList3 = new ITIList<ITIList<string>>();
-        }
 
         [Test]
         public void BulkAddingAndRemoving()
@@ -38,6 +31,19 @@ namespace Intech.Business.Tests
         [Test]
         public void AddingItems()
         {
+            ITIList<object> list = new ITIList<object>();
+            list.Add(new Object());
+            Assert.That( list.Count, Is.EqualTo(1) );
+            list.Remove(new Object());
+            Assert.That( list.Count, Is.EqualTo(1) );
+
+
+            ITIList<int> intList = new ITIList<int>();
+            intList.Add(36);
+            Assert.That(intList.Count, Is.EqualTo(1));
+            intList.Remove(36);
+            Assert.That(intList.Count, Is.EqualTo(0));
+
             // Arrange
             ITIList<int> myList = new ITIList<int>();
             Assert.That( myList.Count, Is.EqualTo( 0 ) );
@@ -64,23 +70,9 @@ namespace Intech.Business.Tests
 
             // Assert
             Assert.That(myList.Count, Is.EqualTo(1));
-            Assert.That(myList[0], Is.InstanceOf(typeof(string)));
             Assert.That(myList[0], Is.EqualTo(itemToAdd));
-            Stopwatch time = Stopwatch.StartNew();
             myList.RemoveUsingIndexOf(itemToAdd);
-            time.Stop();
-            Console.WriteLine(time.Elapsed);
             Assert.That(myList.Count, Is.EqualTo(0));
-
-            myList.Add(itemToAdd);
-            Assert.That(myList.Count, Is.EqualTo(1));
-            System.Diagnostics.Stopwatch time2 = Stopwatch.StartNew();
-            myList.Remove(itemToAdd);
-            time2.Stop();
-            Console.WriteLine(time2.Elapsed);
-            Assert.That(myList.Count, Is.EqualTo(0));
-
-            Assert.That(time.Elapsed, Is.LessThanOrEqualTo(time2.Elapsed));
         }
 
     }
