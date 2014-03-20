@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{497FF6AD-BDB4-4220-8C2E-F0C4779CAA5F}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Intech.Space</RootNamespace>
     <AssemblyName>Intech.Universe</AssemblyName>
@@ -29,6 +29,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -39,6 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App.cs" />
+    <Compile Include="Galaxy.cs" />
+    <Compile Include="Planet.cs" />
+    <Compile Include="SpaceItem.cs" />
+    <Compile Include="Star.cs" />
     <Compile Include="Universe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
