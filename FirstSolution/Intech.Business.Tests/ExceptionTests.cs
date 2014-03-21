@@ -130,5 +130,58 @@ namespace Intech.Business.Tests
             return withException;
         }
 
+        string BuildNaive( string pattern, int count )
+        {
+            string s = String.Empty;
+            while( --count > 0 )
+            {
+                s += pattern;
+            }
+            return s;
+        }
+
+        string BuildBetter( string pattern, int count )
+        {
+            StringBuilder b = new StringBuilder();
+            while( --count > 0 )
+            {
+                b.Append( pattern );
+            }
+            return b.ToString();
+        }
+
+        [Test]
+        public void Complexity()
+        {
+            int testCount = 100;
+            int count = 10000;
+            string pattern = "Toto";
+
+            Stopwatch w = new Stopwatch();
+
+            long naiveTicks;
+            w.Start();
+            for( int i = 0; i < testCount; ++i )
+            {
+                BuildNaive( pattern, count );
+            }
+            w.Stop();
+            naiveTicks = w.ElapsedTicks;
+
+            long betterTicks;
+            w.Restart();
+            for( int i = 0; i < testCount; ++i )
+            {
+                BuildBetter( pattern, count );
+            }
+            w.Stop();
+            betterTicks = w.ElapsedTicks;
+
+            Console.WriteLine( "Naive: {0}, Better: {1}, Ratio: {2}",
+                naiveTicks,
+                betterTicks,
+                naiveTicks / betterTicks );
+        }
+
     }
 }
