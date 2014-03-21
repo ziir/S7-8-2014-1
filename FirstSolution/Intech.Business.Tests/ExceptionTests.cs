@@ -153,21 +153,23 @@ namespace Intech.Business.Tests
         [Test]
         public void Complexity()
         {
-            int testCount = 100;
-            int count = 10000;
+            int testCount = 2;
             string pattern = "Toto";
 
             Stopwatch w = new Stopwatch();
 
-            long naiveTicks;
-            w.Start();
-            for( int i = 0; i < testCount; ++i )
+            int n = 0;
+            while( n < 100000 )
             {
-                BuildNaive( pattern, count );
+                n += 1000;
+                long naiveTicks = PerfNaive( testCount, n, pattern, w );
+                long betterTicks = PerfBetter( testCount, n, pattern, w );
+                Console.WriteLine( "{2}, {0}, {1}", naiveTicks, betterTicks, n );
             }
-            w.Stop();
-            naiveTicks = w.ElapsedTicks;
+        }
 
+        private long PerfBetter( int testCount, int count, string pattern, Stopwatch w )
+        {
             long betterTicks;
             w.Restart();
             for( int i = 0; i < testCount; ++i )
@@ -176,11 +178,20 @@ namespace Intech.Business.Tests
             }
             w.Stop();
             betterTicks = w.ElapsedTicks;
+            return betterTicks;
+        }
 
-            Console.WriteLine( "Naive: {0}, Better: {1}, Ratio: {2}",
-                naiveTicks,
-                betterTicks,
-                naiveTicks / betterTicks );
+        private long PerfNaive( int testCount, int count, string pattern, Stopwatch w )
+        {
+            long naiveTicks;
+            w.Restart();
+            for( int i = 0; i < testCount; ++i )
+            {
+                BuildNaive( pattern, count );
+            }
+            w.Stop();
+            naiveTicks = w.ElapsedTicks;
+            return naiveTicks;
         }
 
     }

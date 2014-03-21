@@ -61,5 +61,54 @@ namespace Intech.Business.Tests
             Assert.That( l.GetEnumerator().MoveNext(), Is.False );
         }
 
+        [Test]
+        public void ExceptionsMustBeThrown()
+        {
+            var l = new ITIList<int>();
+            l.Add( 1 );
+
+            AssertThrow( typeof( InvalidOperationException ), () => Console.WriteLine( l.GetEnumerator().Current ) );
+            
+            AssertThrow<InvalidOperationException>( () => Console.WriteLine( l.GetEnumerator().Current ) );
+
+        }
+
+        static void AssertThrow<T>( Action a )
+        {
+            bool exThrown = false;
+            try
+            {
+                a();
+            }
+            catch( Exception ex )
+            {
+                if( ex is T == false )
+                {
+                    Assert.Fail( String.Format( "Expected exception {0} but got a {1}.",
+                        typeof(T).FullName, ex.GetType().FullName ) );
+                }
+                exThrown = true;
+            }
+            Assert.That( exThrown, String.Format( "A {0} is expected.", typeof(T).FullName ) );
+        }
+
+        static void AssertThrow( Type expectedExceptionType, Action a )
+        {
+            bool exThrown = false;
+            try
+            {
+                a();
+            }
+            catch( Exception ex )
+            {
+                if( expectedExceptionType.IsAssignableFrom( ex.GetType() ) == false )
+                {
+                    Assert.Fail( String.Format( "Expected exception {0} but got a {1}.",
+                        expectedExceptionType.FullName, ex.GetType().FullName ) );
+                }
+                exThrown = true;
+            }
+            Assert.That( exThrown, String.Format( "A {0} is expected.", expectedExceptionType.FullName ) );
+        }
     }
 }
