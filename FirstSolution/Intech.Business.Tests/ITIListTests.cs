@@ -10,6 +10,18 @@ namespace Intech.Business.Tests
     [TestFixture]
     public class ITIListTests
     {
+        [SetUp]
+        public void Initialize()
+        {
+            // Done BEFORE each test of this fixture.
+        }
+
+        [TearDown]
+        public void Unitialize()
+        {
+            // Done AFTER each test of this fixture.
+        }
+
         [Test]
         public void Basics()
         {

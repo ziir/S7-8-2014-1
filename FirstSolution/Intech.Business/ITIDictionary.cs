@@ -10,6 +10,7 @@ namespace Intech.Business
     {
         int _count;
         Bucket[] _buckets;
+        static int[] _primeNumbers = new int[] { 11, 23, 47, 97, 199, 397, 809 };
 
         class Bucket
         {
@@ -40,14 +41,14 @@ namespace Intech.Business
             AddOrReplace( key, value, true );
         }
 
-        void AddOrReplace( TKey key, TValue value, bool add )
+        bool AddOrReplace( TKey key, TValue value, bool add )
         {
             int h = key.GetHashCode();
             int slot = Math.Abs( h % _buckets.Length );
             Bucket b = _buckets[slot];
             if( b == null )
             {
-                _buckets[slot] = new Bucket( key, value, null );
+                AddNewBucket( slot, key, value );
             }
             else
             {
@@ -57,15 +58,69 @@ namespace Intech.Business
                     {
                         if( add ) throw new InvalidOperationException( "Dans ta face." );
                         b.Value = value;
-                        return;
+                        // It could be useful to know if the value has been
+                        // added or updated...
+                        return false;
                     }
                     b = b.Next;
                 }
                 while( b != null );
-                ++_count;
-                b = new Bucket( key, value, _buckets[slot] );
-                _buckets[slot] = b;
+                AddNewBucket( slot, key, value );
             }
+            return true;
+        }
+
+        Bucket AddNewBucket( int slot, TKey key, TValue value )
+        {
+            ++_count;
+            Bucket b = new Bucket( key, value, _buckets[slot] );
+            _buckets[slot] = b;
+            // Should I grow ?
+            int avgCount = _count / _buckets.Length;
+            if( avgCount > 3 )
+            {
+                Grow();
+            }
+            return b;
+        }
+
+        private void Grow()
+        {
+            int nextLength = _primeNumbers[Array.IndexOf( _primeNumbers, _buckets.Length ) + 1];
+            Bucket[] newBuckets = new Bucket[nextLength];
+            for( int i = 0; i < _buckets.Length; ++i )
+            {
+                Bucket b = _buckets[i];
+                while( b != null )
+                {
+                    int newSlot = Math.Abs( b.Key.GetHashCode() % newBuckets.Length );
+                    var oldNext = b.Next;
+                    b.Next = newBuckets[newSlot];
+                    newBuckets[newSlot] = b;
+                    b = oldNext;
+                }
+            }
+            _buckets = newBuckets;
+        }
+
+        public bool Remove( TKey key )
+        {
+            int slot = Math.Abs( key.GetHashCode() % _buckets.Length );
+            Bucket b = _buckets[slot];
+            Bucket previous = null;
+            while( b != null )
+            {
+                if( EqualityComparer<TKey>.Default.Equals( b.Key, key ) )
+                {
+                    if( previous != null ) previous.Next = b.Next;
+                    else _buckets[slot] = b.Next;
+                    --_count;
+                    return true;
+                }
+                previous = b;
+                b = b.Next;
+            }
+            return false;
         }
 
         public bool TryGetValue( TKey key, out TValue value )
