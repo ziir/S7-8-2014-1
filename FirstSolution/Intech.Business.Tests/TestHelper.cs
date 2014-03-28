@@ -34,9 +34,12 @@ namespace Intech.Business.Tests
                                                                    SolutionFolder.FullName,
                                                                    "Intech.Business.Tests",
                                                                    "TestSupport" ) ))
+                            // Coalescence operator can be chained (thanks Maxime!)
                             ?? new DirectoryInfo( "" );
 
-                return _testSupportFolder != null 
+                /* Avoid Unreachable code detected warning...
+                
+                 return _testSupportFolder != null 
                             ? _testSupportFolder
                             : (_testSupportFolder = new DirectoryInfo(
                                    Path.Combine(
@@ -55,6 +58,7 @@ namespace Intech.Business.Tests
                                        "TestSupport" ) );
                 }
                 return _testSupportFolder;
+                */
             }
         }
 

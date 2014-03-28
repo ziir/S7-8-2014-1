@@ -57,7 +57,7 @@ namespace Intech.Business.Tests
             //catch( Exception ex )
             //{
             //}
-            catch( ArgumentException ex )
+            catch( ArgumentException )
             {
                 //...
                 Assert.Fail( "Never here!!" );
@@ -80,7 +80,7 @@ namespace Intech.Business.Tests
 
         #endregion
 
-        [Test]
+        [Test, Explicit]
         public void SmallPerfTest()
         {
             Console.WriteLine( "Not an integer:" );
@@ -151,6 +151,7 @@ namespace Intech.Business.Tests
         }
 
         [Test]
+        [Explicit]
         public void Complexity()
         {
             int testCount = 2;

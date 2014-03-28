@@ -47,6 +47,27 @@ namespace Intech.Business
             }
         }
 
+        public bool Remove( T value )
+        {
+            int idx = IndexOf( value );
+            if( idx >= 0 )
+            {
+                RemoveAt( idx );
+                return true;
+            }
+            return false;
+        }
+
+        public int IndexOf( T value )
+        {
+            var comparer = EqualityComparer<T>.Default;
+            for( uint i = 0; i < _count; ++i )
+            {
+                if( comparer.Equals( value, _array[i] ) ) return i;
+            }
+            return -1;
+        }
+
         public void RemoveAt( int i )
         {
             if( i < 0 || i >= _count ) throw new IndexOutOfRangeException();
