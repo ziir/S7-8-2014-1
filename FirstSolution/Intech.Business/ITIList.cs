@@ -61,7 +61,7 @@ namespace Intech.Business
         public int IndexOf( T value )
         {
             var comparer = EqualityComparer<T>.Default;
-            for( uint i = 0; i < _count; ++i )
+            for( int i = 0; i < _count; ++i )
             {
                 if( comparer.Equals( value, _array[i] ) ) return i;
             }

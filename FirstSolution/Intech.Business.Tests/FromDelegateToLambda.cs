@@ -94,6 +94,7 @@ namespace Intech.Business.Tests
             // This instance is bound to DoAnotherThing that is an Instance method.
             TestPerformanceFunctionWithValue f2 = DoAnotherThing;
             f2( 1 );
+            Assert.That( _toto, Is.EqualTo( 5 ) );
         }
         #endregion
 

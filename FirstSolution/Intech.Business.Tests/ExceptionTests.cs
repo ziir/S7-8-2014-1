@@ -67,7 +67,7 @@ namespace Intech.Business.Tests
                 Assert.That( ex, Is.Not.Null );
                 anExceptionHasBeenCaught = true;
             }
-            catch( Exception ex )
+            catch( Exception )
             {
                 Assert.Fail( "Never here!!" );
             }
