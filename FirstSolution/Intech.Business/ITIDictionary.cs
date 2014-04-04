@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Intech.Business
 {
-    public class ITIDictionary<TKey,TValue>
+    public class ITIDictionary<TKey,TValue> : IEnumerable<KeyValuePair<TKey,TValue>>
     {
         int _count;
         Bucket[] _buckets;
