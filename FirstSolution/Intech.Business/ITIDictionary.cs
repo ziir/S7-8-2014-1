@@ -244,6 +244,11 @@ namespace Intech.Business
             {
                 return  GetEnumerator();
             }
+
+            object System.Collections.IEnumerator.Current
+            {
+                get { return Current; }
+            }
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
@@ -256,6 +261,20 @@ namespace Intech.Business
         {
             return GetEnumerator();
         }
+
+        public void Traverse( Action<TKey,TValue> a )
+        {
+            for( int i = 0; i < _buckets.Length; ++i )
+            {
+                Bucket b = _buckets[i];
+                while( b != null )
+                {
+                    a( b.Key, b.Value );
+                    b = b.Next;
+                }
+            }
+        }
+
     }
 
 }

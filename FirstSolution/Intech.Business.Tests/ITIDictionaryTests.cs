@@ -22,5 +22,22 @@ namespace Intech.Business.Tests
         }
 
 
+        [Test]
+        public void TraverseTest()
+        {
+            var db = new ITIDictionary<string,int>();
+            db.Add( "Paul", 45456 );
+            db.Add( "Jonn", 123 );
+            db.Add( "Michaël", 123 );
+
+            db.Traverse( ( k, v ) => Console.WriteLine( "K={0}, V={1}", k, v ) );
+
+            foreach( var p in db )
+            {
+                Console.WriteLine( "K={0}, V={1}", p.Key, p.Value );
+            }
+
+        }
+
     }
 }
