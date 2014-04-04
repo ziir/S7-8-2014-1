@@ -10,7 +10,7 @@ namespace Intech.Business
     {
         int _count;
         Bucket[] _buckets;
-        IDicStrat<TKey> _strategy;
+        IEqualityComparer<TKey> _strategy;
 
         static int[] _primeNumbers = new int[] { 11, 23, 47, 97, 199, 397, 809 };
 
@@ -28,27 +28,13 @@ namespace Intech.Business
             }
         }
 
-        class DefaultStrategy : IDicStrat<TKey>
-        {
-            public bool IsItEqual( TKey key1, TKey key2 )
-            {
-                return EqualityComparer<TKey>.Default.Equals( key1, key2 );
-            }
-
-            public int ComputeHashCode( TKey key )
-            {
-                int h = key.GetHashCode();
-                return h;
-            }
-        }
-
         public ITIDictionary()
         {
-            _strategy = new DefaultStrategy();
+            _strategy = EqualityComparer<TKey>.Default;
             _buckets = new Bucket[11];
         }
 
-        public ITIDictionary( IDicStrat<TKey> strategy )
+        public ITIDictionary( IEqualityComparer<TKey> strategy )
         {
             if( strategy == null ) throw new ArgumentNullException( "strategy" );
             _strategy = strategy;
@@ -67,7 +53,7 @@ namespace Intech.Business
 
         bool AddOrReplace( TKey key, TValue value, bool add )
         {
-            int h = _strategy.ComputeHashCode( key );
+            int h = _strategy.GetHashCode( key );
             int slot = Math.Abs( h % _buckets.Length );
             Bucket b = _buckets[slot];
             if( b == null )
@@ -78,7 +64,7 @@ namespace Intech.Business
             {
                 do
                 {
-                    if( _strategy.IsItEqual( key, b.Key ) )
+                    if( _strategy.Equals( key, b.Key ) )
                     {
                         if( add ) throw new InvalidOperationException( "Dans ta face." );
                         b.Value = value;
@@ -117,7 +103,7 @@ namespace Intech.Business
                 Bucket b = _buckets[i];
                 while( b != null )
                 {
-                    int newSlot = Math.Abs( _strategy.ComputeHashCode( b.Key ) % newBuckets.Length );
+                    int newSlot = Math.Abs( _strategy.GetHashCode( b.Key ) % newBuckets.Length );
                     var oldNext = b.Next;
                     b.Next = newBuckets[newSlot];
                     newBuckets[newSlot] = b;
@@ -129,12 +115,12 @@ namespace Intech.Business
 
         public bool Remove( TKey key )
         {
-            int slot = Math.Abs( _strategy.ComputeHashCode( key ) % _buckets.Length );
+            int slot = Math.Abs( _strategy.GetHashCode( key ) % _buckets.Length );
             Bucket b = _buckets[slot];
             Bucket previous = null;
             while( b != null )
             {
-                if( _strategy.IsItEqual( b.Key, key ) )
+                if( _strategy.Equals( b.Key, key ) )
                 {
                     if( previous != null ) previous.Next = b.Next;
                     else _buckets[slot] = b.Next;
@@ -149,12 +135,12 @@ namespace Intech.Business
 
         public bool TryGetValue( TKey key, out TValue value )
         {
-            int h = _strategy.ComputeHashCode( key );
+            int h = _strategy.GetHashCode( key );
             int slot = Math.Abs( h % _buckets.Length );
             Bucket b = _buckets[slot];
             while( b != null )
             {
-                if( _strategy.IsItEqual( b.Key, key ) )
+                if( _strategy.Equals( b.Key, key ) )
                 {
                     value = b.Value;
                     return true;
@@ -189,13 +175,5 @@ namespace Intech.Business
             }
         }
     }
-
-    public interface IDicStrat<T>
-    {
-       bool IsItEqual( T key1, T key2 );
-
-       int ComputeHashCode( T key );
-    }
-
 
 }
