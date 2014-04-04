@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,6 +45,20 @@ namespace Intech.Business
         public int Count
         {
             get { return _count; }
+        }
+
+        public IEnumerable<TValue> Values
+        {
+            get
+            {
+            }
+        }
+
+        public IEnumerable<TKey> Keys
+        {
+            get
+            {
+            }
         }
 
         public void Add( TKey key, TValue value )
@@ -173,6 +188,69 @@ namespace Intech.Business
                 // Add or replace the value for the given key.
                 AddOrReplace( key, value, false );
             }
+        }
+
+        class E : IEnumerator<KeyValuePair<TKey, TValue>>
+        {
+            readonly ITIDictionary<TKey, TValue> _d;
+            int _iSlot;
+            Bucket _current;
+
+            public E( ITIDictionary<TKey, TValue> d )
+            {
+                _d = d;
+                _iSlot = -1;
+                // _current = null;
+            }
+
+            public KeyValuePair<TKey, TValue> Current
+            {
+                get 
+                {
+                    if( _current == null )
+                    {
+                        throw new InvalidOperationException( "MoveNext() must have been called and returned true." );
+                    }
+                    return new KeyValuePair<TKey, TValue>( _current.Key, _current.Value );
+                }
+            }
+
+            public bool MoveNext()
+            {
+                if( _current != null ) _current = _current.Next;
+                while( _current == null )
+                {
+                    ++_iSlot;
+                    if( _iSlot >= _d._buckets.Length ) return false;
+                    _current = _d._buckets[_iSlot];
+                }
+                Debug.Assert( _current != null );
+                return true;
+            }
+
+            public void Dispose()
+            {
+            }
+
+            object System.Collections.IEnumerator.Current
+            {
+                get { return Current; }
+            }
+
+            public void Reset()
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            return new E( this );
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 
