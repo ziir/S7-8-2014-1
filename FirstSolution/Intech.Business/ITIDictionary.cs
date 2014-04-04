@@ -262,7 +262,7 @@ namespace Intech.Business
             return GetEnumerator();
         }
 
-        public void Traverse( Action<TKey,TValue> a )
+        public void Traverse( Action<TKey, TValue> a )
         {
             for( int i = 0; i < _buckets.Length; ++i )
             {
@@ -270,6 +270,19 @@ namespace Intech.Business
                 while( b != null )
                 {
                     a( b.Key, b.Value );
+                    b = b.Next;
+                }
+            }
+        }
+
+        public IEnumerable<KeyValuePair<TKey,TValue>> EnumerateContent()
+        {
+            for( int i = 0; i < _buckets.Length; ++i )
+            {
+                Bucket b = _buckets[i];
+                while( b != null )
+                {
+                    yield return new KeyValuePair<TKey,TValue>( b.Key, b.Value );
                     b = b.Next;
                 }
             }
