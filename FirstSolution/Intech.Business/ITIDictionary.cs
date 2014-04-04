@@ -47,70 +47,14 @@ namespace Intech.Business
             get { return _count; }
         }
 
-        class EValues : EBase, IEnumerator<TValue>, IEnumerable<TValue>
-        {
-            public EValues( ITIDictionary<TKey, TValue> d )
-                : base( d )
-            {
-            }
-
-            public TValue Current
-            {
-                get { return CurrentBucket.Value; }
-            }
-
-            object System.Collections.IEnumerator.Current
-            {
-                get { return Current; }
-            }
-
-            public IEnumerator<TValue> GetEnumerator()
-            {
-                return new EValues( _d );
-            }
-
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-        }
-
-        class EKeys : EBase, IEnumerator<TKey>, IEnumerable<TKey>
-        {
-            public EKeys( ITIDictionary<TKey, TValue> d )
-                : base( d )
-            {
-            }
-
-            public TKey Current
-            {
-                get { return CurrentBucket.Key; }
-            }
-
-            object System.Collections.IEnumerator.Current
-            {
-                get { return Current; }
-            }
-
-            public IEnumerator<TKey> GetEnumerator()
-            {
-                return new EKeys( _d );
-            }
-
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-        }
-
         public IEnumerable<TValue> Values
         {
-            get { return new EValues( this ); }
+            get { return new EBase<TValue>( this, b => b.Value ); }
         }
 
         public IEnumerable<TKey> Keys
         {
-            get { return new EKeys( this ); }
+            get { return new EBase<TKey>( this, delegate( Bucket b ) { return b.Key; } ); }
         }
 
         public void Add( TKey key, TValue value )
@@ -242,38 +186,22 @@ namespace Intech.Business
             }
         }
 
-        class EFull : EBase, IEnumerator<KeyValuePair<TKey, TValue>>
-        {
-            public EFull( ITIDictionary<TKey, TValue> d )
-                : base( d )
-            {
-            }
-
-            public KeyValuePair<TKey, TValue> Current
-            {
-                get { return new KeyValuePair<TKey, TValue>( CurrentBucket.Key, CurrentBucket.Value ); }
-            }
-
-            object System.Collections.IEnumerator.Current
-            {
-                get { return Current; }
-            }
-        }
-
-        class EBase
+        class EBase<T> : IEnumerable<T>, IEnumerator<T>
         {
             protected readonly ITIDictionary<TKey, TValue> _d;
             int _iSlot;
             Bucket _current;
+            Func<Bucket,T> _getT;
 
-            public EBase( ITIDictionary<TKey, TValue> d )
+            public EBase( ITIDictionary<TKey, TValue> d, Func<Bucket,T> getter )
             {
                 _d = d;
                 _iSlot = -1;
+                _getT = getter;
                 // _current = null;
             }
 
-            protected Bucket CurrentBucket
+            public T Current
             {
                 get
                 {
@@ -281,7 +209,7 @@ namespace Intech.Business
                     {
                         throw new InvalidOperationException( "MoveNext() must have been called and returned true." );
                     }
-                    return _current;
+                    return _getT( _current );
                 }
             }
 
@@ -306,11 +234,22 @@ namespace Intech.Business
             {
                 throw new NotSupportedException();
             }
+
+            public IEnumerator<T> GetEnumerator()
+            {
+                return new EBase<T>( _d, _getT );
+            }
+
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return  GetEnumerator();
+            }
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            return new EFull( this );
+            return new EBase<KeyValuePair<TKey, TValue>>( this, 
+                b => new KeyValuePair<TKey, TValue>( b.Key, b.Value ) );
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
