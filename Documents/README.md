@@ -26,3 +26,16 @@
 * IEnumerable & IEnumerator
 	* ‘foreach’ keyword is a syntactic sugar for GetEnumerator/MoveNext/Current/Dispose.
 * Generics
+* Multi-Thread Programming / Concurrency control
+	* Critical Section
+	* Semaphone
+	* Mutex
+		* Ensures that no two concurrent processes are in their critical section at the same time.
+	* Readers-Writer lock
+		* Synchronization primitive, similar to a mutex. Allows concurrent read access while restricting access to a single thread for writes.
+* Asynchronous Programming : Tasks (C#) / Promises (JavaScript) / Futures (Java) are the same thing 
+	* Can improve greatly improve performance, especially with IO operations (working with images, remote content, files).
+	* Syntaxic sugar is good for you.
+	* You don't need to worry about the threads, the language  or framework does it for you.
+	* The await operator is your friend.
+	* Easily group multiple asynchronous operations using Task.WhenAll
